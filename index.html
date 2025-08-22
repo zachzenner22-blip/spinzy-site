@@ -2,12 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spinzy v13</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spinzy</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="app"></div>
+  <header class="toolbar">
+    <div class="brand">Spinzy</div>
+    <div class="tools">
+      <button id="addWheel" class="btn">➕ Add Wheel</button>
+      <button id="clearAll" class="btn danger">🗑 Clear All Wheels</button>
+      <button id="themeToggle" class="btn ghost" title="Toggle theme">🌗</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <aside class="ad-col" id="adCol"></aside>
+
+    <section class="stage">
+      <nav id="wheelTabs" class="tabs"></nav>
+
+      <section id="slides" class="slides"><!-- JS injects wheels here --></section>
+    </section>
+  </main>
+
+  <!-- Winner Modal -->
+  <dialog id="winnerDialog" class="dialog">
+    <div class="dialog-card">
+      <div class="dialog-title">Winner!</div>
+      <div id="winnerName" class="dialog-winner">—</div>
+      <div class="dialog-actions">
+        <button id="removeWinner" class="btn danger">Remove Winner</button>
+        <button id="closeDialog" class="btn">Close</button>
+      </div>
+    </div>
+  </dialog>
+
   <script src="script.js"></script>
 </body>
 </html>
