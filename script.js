@@ -1,35 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("wheel-container");
+  const container = document.getElementById("wheelContainer");
+  const addBtn = document.getElementById("addWheel");
+  const clearBtn = document.getElementById("clearAll");
+  const themeToggle = document.getElementById("themeToggle");
 
-  // Create default wheel
-  const canvas = document.createElement("canvas");
-  canvas.width = 500;
-  canvas.height = 500;
-  container.appendChild(canvas);
-
-  const ctx = canvas.getContext("2d");
-  const names = ["Alice", "Bob", "Charlie", "Diana"];
-  const colors = ["#FF6384","#36A2EB","#FFCE56","#4BC0C0"];
-  let currentAngle = 0;
-
-  function drawWheel() {
-    const slice = (2 * Math.PI) / names.length;
-    for (let i = 0; i < names.length; i++) {
-      ctx.beginPath();
-      ctx.moveTo(250, 250);
-      ctx.fillStyle = colors[i % colors.length];
-      ctx.arc(250, 250, 250, slice * i + currentAngle, slice * (i+1) + currentAngle);
-      ctx.fill();
-      ctx.save();
-      ctx.translate(250,250);
-      ctx.rotate(slice * i + slice/2 + currentAngle);
-      ctx.textAlign = "right";
-      ctx.fillStyle = "#000";
-      ctx.font = "20px Arial";
-      ctx.fillText(names[i], 230, 10);
-      ctx.restore();
-    }
+  function addWheel(title = "New Wheel") {
+    const card = document.createElement("div");
+    card.className = "wheel-card";
+    card.innerHTML = \`
+      <h2 contenteditable="true">\${title}</h2>
+      <canvas width="400" height="400"></canvas>
+      <button class="spinBtn">Push to Spin</button>
+      <button class="deleteBtn">Delete Wheel</button>
+    \`;
+    container.appendChild(card);
   }
 
-  drawWheel();
+  addBtn.addEventListener("click", () => addWheel());
+  clearBtn.addEventListener("click", () => {
+    container.innerHTML = "";
+  });
+
+  themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+  });
+
+  // Default wheel
+  addWheel("Default Wheel");
 });
