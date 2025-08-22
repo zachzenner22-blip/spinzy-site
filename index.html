@@ -2,333 +2,122 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Spinzy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spinzy v7</title>
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       background: var(--bg);
       color: var(--text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      transition: background 0.3s, color 0.3s;
     }
     :root {
-      --bg: #ffffff;
-      --text: #222;
-      --card: #f5f5f5;
+      --bg: #fff;
+      --text: #000;
     }
-    body.dark {
+    [data-theme='dark'] {
       --bg: #121212;
       --text: #f5f5f5;
-      --card: #1e1e1e;
     }
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: var(--card);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      z-index: 1000;
-      opacity: 0.9;
+    #wheel {
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      border: 10px solid #333;
+      position: relative;
     }
-    header button {
-      margin-left: 10px;
-    }
-    main {
-      padding-top: 70px;
-      width: 100%;
-      max-width: 900px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .wheel-card {
-      background: var(--card);
-      margin: 20px;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      width: 100%;
-    }
-    .title {
-      font-size: 1.2em;
-      font-weight: bold;
-      margin-bottom: 10px;
-      outline: none;
-    }
-    canvas {
-      max-width: 100%;
-    }
-    .controls {
-      margin-top: 10px;
-      display: flex;
-      gap: 10px;
-    }
-    .winner {
-      margin-top: 10px;
-      font-size: 1.1em;
-      font-weight: bold;
-    }
-    .notch {
+    #notch {
       width: 0;
       height: 0;
-      border-left: 25px solid transparent;
-      border-right: 25px solid transparent;
-      border-bottom: 40px solid red;
-      margin: 0 auto;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 30px solid #fff;
+      position: absolute;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
     }
-    .push-label {
+    #spinButton {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 1.2em;
-      font-weight: bold;
-      pointer-events: none;
-      user-select: none;
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div>Spinzy</div>
-    <div>
-      <button id="addWheelBtn">Add Wheel</button>
-      <button id="clearAllBtn">Clear All Wheels</button>
-      <button id="darkToggle">Toggle Dark</button>
-    </div>
-  </header>
-  <main id="wheelContainer"></main>
-
-  <audio id="winSound">
-    <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
-  </audio>
+  <div id="wheel-container">
+    <div id="notch"></div>
+    <canvas id="wheel"></canvas>
+    <button id="spinButton">Push to Spin</button>
+  </div>
 
   <script>
-    const container = document.getElementById('wheelContainer');
-    const darkToggle = document.getElementById('darkToggle');
-    const addWheelBtn = document.getElementById('addWheelBtn');
-    const clearAllBtn = document.getElementById('clearAllBtn');
-    const winSound = document.getElementById('winSound');
-
-    let wheels = JSON.parse(localStorage.getItem('spinzy_wheels')) || [];
-
-    function saveState() {
-      localStorage.setItem('spinzy_wheels', JSON.stringify(wheels));
+    const root = document.documentElement;
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (localStorage.getItem('theme')) {
+      document.body.dataset.theme = localStorage.getItem('theme');
+    } else {
+      document.body.dataset.theme = prefersDark ? 'dark' : 'light';
     }
 
-    function randomColor(i) {
-      const colors = ["#f94144","#f3722c","#f8961e","#f9844a","#f9c74f","#90be6d","#43aa8b","#4d908e","#577590","#277da1"];
-      return colors[i % colors.length];
-    }
+    const wheel = document.getElementById('wheel');
+    const ctx = wheel.getContext('2d');
+    wheel.width = 400;
+    wheel.height = 400;
 
-    function drawWheel(wheel, canvas, pushLabel) {
-      const ctx = canvas.getContext('2d');
-      const names = wheel.names.length ? wheel.names : ["Add names..."];
-      const slices = names.length;
-      const arc = (2 * Math.PI) / slices;
-      const radius = canvas.width / 2;
+    const segments = ['One','Two','Three','Four','Five','Six'];
+    const colors = ['#e74c3c','#3498db','#f1c40f','#2ecc71','#9b59b6','#1abc9c'];
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.font = `${Math.max(14, radius / 10)}px Arial`;
-
-      for (let i=0; i<slices; i++) {
+    function drawWheel() {
+      const arc = (2 * Math.PI) / segments.length;
+      for (let i = 0; i < segments.length; i++) {
         ctx.beginPath();
-        ctx.fillStyle = randomColor(i);
-        ctx.moveTo(radius, radius);
-        ctx.arc(radius, radius, radius, i*arc, (i+1)*arc);
+        ctx.fillStyle = colors[i];
+        ctx.moveTo(200,200);
+        ctx.arc(200,200,200,arc*i,arc*(i+1));
+        ctx.lineTo(200,200);
         ctx.fill();
         ctx.save();
-        ctx.translate(radius, radius);
-        ctx.rotate(i*arc + arc/2);
-        ctx.fillStyle = "white";
-        let text = names[i];
-        let fontSize = radius/8;
-        ctx.font = `${fontSize}px Arial`;
-        while(ctx.measureText(text).width > radius*0.6 && fontSize > 10){
-          fontSize -= 1;
-          ctx.font = `${fontSize}px Arial`;
-        }
-        ctx.fillText(text, radius/2.5, 0);
+        ctx.translate(200,200);
+        ctx.rotate(arc*i + arc/2);
+        ctx.fillStyle = '#fff';
+        ctx.font = '16px Arial';
+        ctx.fillText(segments[i], 100, 10);
         ctx.restore();
       }
     }
 
-    function spinWheel(wheel, canvas, resultDiv, pushLabel) {
-      const ctx = canvas.getContext('2d');
-      let angle = 0;
-      let spinTime = 0;
-      let spinTimeTotal = 0;
-      let spinAngleStart = Math.random() * 10 + 10;
-      const names = wheel.names.length ? wheel.names : ["Add names..."];
-      const slices = names.length;
-      const arc = (2 * Math.PI) / slices;
+    drawWheel();
 
-      function rotate() {
-        spinTime += 30;
-        if(spinTime >= spinTimeTotal) {
-          stopRotateWheel();
-          return;
-        }
-        let spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
-        angle += (spinAngle * Math.PI / 180);
-        ctx.save();
-        ctx.translate(canvas.width/2, canvas.height/2);
-        ctx.rotate(angle);
-        ctx.translate(-canvas.width/2, -canvas.height/2);
-        drawWheel(wheel, canvas, pushLabel);
-        ctx.restore();
-        requestAnimationFrame(rotate);
-      }
+    const spinButton = document.getElementById('spinButton');
+    const notch = document.getElementById('notch');
 
-      function stopRotateWheel() {
-        const degrees = angle * 180/Math.PI + 90;
-        const arcd = arc * 180/Math.PI;
-        const index = Math.floor((360 - degrees % 360) / arcd) % slices;
-        const winner = names[index];
-        resultDiv.textContent = "Winner: " + winner;
-        winSound.play();
-        confetti();
-        pushLabel.style.display = "block";
-      }
-
-      function easeOut(t, b, c, d) {
-        const ts = (t/=d)*t;
-        const tc = ts*t;
-        return b+c*(tc + -3*ts + 3*t);
-      }
-
-      spinTime = 0;
-      spinTimeTotal = Math.random()*3000 + 4000;
-      rotate();
-    }
-
-    function render() {
-      container.innerHTML = "";
-      wheels.forEach((wheel, idx) => {
-        const card = document.createElement('div');
-        card.className = "wheel-card";
-
-        const title = document.createElement('div');
-        title.className = "title";
-        title.contentEditable = true;
-        title.textContent = wheel.title || "Untitled Wheel";
-        title.oninput = () => {
-          wheel.title = title.textContent;
-          saveState();
-        };
-        card.appendChild(title);
-
-        const notch = document.createElement('div');
-        notch.className = "notch";
-        card.appendChild(notch);
-
-        const canvasWrapper = document.createElement('div');
-        canvasWrapper.style.position = "relative";
-        const canvas = document.createElement('canvas');
-        canvas.width = 400;
-        canvas.height = 400;
-        const pushLabel = document.createElement('div');
-        pushLabel.className = "push-label";
-        pushLabel.textContent = "Push to Spin";
-        canvasWrapper.appendChild(canvas);
-        canvasWrapper.appendChild(pushLabel);
-        card.appendChild(canvasWrapper);
-
-        const resultDiv = document.createElement('div');
-        resultDiv.className = "winner";
-        card.appendChild(resultDiv);
-
-        const controls = document.createElement('div');
-        controls.className = "controls";
-        const input = document.createElement('input');
-        input.placeholder = "Add name";
-        const addBtn = document.createElement('button');
-        addBtn.textContent = "Add";
-        addBtn.onclick = () => {
-          if(input.value.trim()) {
-            wheel.names.push(input.value.trim());
-            input.value = "";
-            drawWheel(wheel, canvas, pushLabel);
-            saveState();
-          }
-        };
-        controls.appendChild(input);
-        controls.appendChild(addBtn);
-
-        const delWheel = document.createElement('button');
-        delWheel.textContent = "Delete Wheel";
-        delWheel.onclick = () => {
-          wheels.splice(idx,1);
-          saveState();
-          render();
-        };
-        controls.appendChild(delWheel);
-
-        card.appendChild(controls);
-
-        canvas.onclick = () => {
-          pushLabel.style.display = "none";
-          spinWheel(wheel, canvas, resultDiv, pushLabel);
-        };
-
-        drawWheel(wheel, canvas, pushLabel);
-        container.appendChild(card);
-      });
-    }
-
-    function confetti(){
-      for(let i=0;i<100;i++){
-        const conf = document.createElement('div');
-        conf.style.position = 'fixed';
-        conf.style.width = '6px';
-        conf.style.height = '6px';
-        conf.style.background = randomColor(i);
-        conf.style.top = '-10px';
-        conf.style.left = Math.random()*window.innerWidth + 'px';
-        conf.style.opacity = Math.random();
-        document.body.appendChild(conf);
-        let fall = setInterval(()=>{
-          let top = parseFloat(conf.style.top);
-          if(top>window.innerHeight){
-            conf.remove();
-            clearInterval(fall);
-          } else {
-            conf.style.top = (top+5)+'px';
-          }
-        },30);
-      }
-    }
-
-    addWheelBtn.onclick = () => {
-      wheels.push({title: "Untitled Wheel", names: []});
-      saveState();
-      render();
-    };
-
-    clearAllBtn.onclick = () => {
-      wheels = [];
-      saveState();
-      render();
-    };
-
-    darkToggle.onclick = () => {
-      document.body.classList.toggle('dark');
-    };
-
-    if(!wheels.length){
-      wheels.push({title: "Untitled Wheel", names: []});
-    }
-    render();
+    spinButton.addEventListener('click', () => {
+      let rand = Math.random() * 360;
+      ctx.clearRect(0,0,wheel.width,wheel.height);
+      ctx.save();
+      ctx.translate(200,200);
+      ctx.rotate(rand * Math.PI/180);
+      ctx.translate(-200,-200);
+      drawWheel();
+      ctx.restore();
+      // Pick winner color
+      const idx = Math.floor(Math.random() * segments.length);
+      notch.style.borderBottomColor = colors[idx];
+      // TODO: confetti + sound effect
+    });
   </script>
 </body>
 </html>
