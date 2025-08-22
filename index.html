@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spinzzy v11 Fixed</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spinzy</title>
+  <link rel="stylesheet" href="style.min.css" />
 </head>
 <body>
-  <div id="app">
-    <div id="toolbar">
-      <button id="toggleTheme">Toggle Dark/Light</button>
-      <button id="addWheel">Add Wheel</button>
-      <button id="clearWheels">Clear All Wheels</button>
-    </div>
-    <div id="layout">
-      <div id="adSpace">Ad Space</div>
-      <div id="wheelArea"></div>
-    </div>
-  </div>
-  <script src="script.js"></script>
+  <header class="toolbar">
+    <button id="toggle-theme">Toggle Dark/Light</button>
+    <button id="add-wheel">Add Wheel</button>
+    <button id="clear-wheels">Clear All Wheels</button>
+  </header>
+  <main class="layout">
+    <aside class="ad-space">Ad Space</aside>
+    <section class="wheel-area">
+      <div id="wheel-nav" class="wheel-nav"></div>
+      <canvas id="wheelCanvas" width="500" height="500"></canvas>
+      <button id="spinButton" class="bubble-btn">Push to Spin</button>
+      <div id="winner-box"></div>
+    </section>
+  </main>
+  <script src="script.min.js"></script>
 </body>
 </html>
