@@ -2,42 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Spinzy 🎡</title>
-  <link rel="icon" href="favicon.png">
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spinzzy</title>
+  <link rel="stylesheet" href="style.min.css" />
 </head>
 <body>
-  <header class="toolbar glassy">
-    <div class="left cluster">
-      <img src="logo.png" alt="Spinzy" class="logo"/>
-      <h1 class="brand">Spinzy</h1>
-    </div>
-    <div class="right cluster">
-      <button id="addWheel" class="btn">➕ Add Wheel</button>
-      <button id="clearAll" class="btn danger">🗑 Clear All Wheels</button>
-      <button id="themeToggle" class="btn ghost" title="Toggle dark/light">🌗</button>
-    </div>
+  <header class="toolbar">
+    <button id="addWheelBtn">➕ Add Wheel</button>
+    <button id="clearAllBtn">🗑️ Clear All Wheels</button>
+    <button id="themeToggle">🌙 Toggle Dark</button>
   </header>
-
-  <main id="carousel" class="carousel">
-    <div id="slides" class="slides"></div>
+  <main class="layout">
+    <aside class="ads">
+      <div class="ad-placeholder">Ad space</div>
+    </aside>
+    <section class="content">
+      <div id="wheelContainer"></div>
+    </section>
   </main>
-
-  <nav id="pager" class="pager"></nav>
-
-  <!-- Winner Modal -->
-  <dialog id="winnerDialog" class="winner-dialog">
-    <div class="glass-card">
-      <div class="winner-badge">Winner!</div>
-      <div class="winner-name" id="winnerName">—</div>
-      <div class="dialog-actions">
-        <button id="removeWinner" class="btn danger">Remove Winner</button>
-        <button id="closeDialog" class="btn">Close</button>
-      </div>
-    </div>
-  </dialog>
-
-  <script src="script.js" defer></script>
+  <script src="script.min.js"></script>
 </body>
 </html>
