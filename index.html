@@ -20,22 +20,23 @@
     </div>
   </header>
 
-  <main id="app" class="grid"></main>
+  <main id="carousel" class="carousel">
+    <div id="slides" class="slides"></div>
+  </main>
 
-  <!-- winner modal -->
-  <dialog id="winnerDialog">
-    <h3 id="winnerTitle">Winner</h3>
-    <div class="winner-name" id="winnerName">—</div>
-    <div class="dialog-actions">
-      <button id="removeWinner" class="btn danger">Remove Winner</button>
-      <button id="closeDialog" class="btn">Close</button>
+  <nav id="pager" class="pager"></nav>
+
+  <!-- Winner Modal -->
+  <dialog id="winnerDialog" class="winner-dialog">
+    <div class="glass-card">
+      <div class="winner-badge">Winner!</div>
+      <div class="winner-name" id="winnerName">—</div>
+      <div class="dialog-actions">
+        <button id="removeWinner" class="btn danger">Remove Winner</button>
+        <button id="closeDialog" class="btn">Close</button>
+      </div>
     </div>
   </dialog>
-
-  <!-- celebration sound (free, short, arcade-like) -->
-  <audio id="winSound" preload="auto">
-    <source src="https://www.soundjay.com/buttons/sounds/button-10.mp3" type="audio/mpeg">
-  </audio>
 
   <script src="script.js" defer></script>
 </body>
