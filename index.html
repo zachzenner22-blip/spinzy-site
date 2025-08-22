@@ -1,18 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spinzy 🎡</title>
+  <link rel="icon" href="favicon.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="toolbar">
-    <button id="darkModeToggle">Toggle Dark Mode</button>
-    <button id="addWheel">Add Wheel</button>
-    <button id="clearWheels">Clear All Wheels</button>
-  </div>
-  <div id="app"></div>
+  <header class="toolbar glassy">
+    <div class="left cluster">
+      <img src="logo.png" alt="Spinzy" class="logo"/>
+      <h1 class="brand">Spinzy</h1>
+    </div>
+    <div class="right cluster">
+      <button id="addWheel" class="btn">➕ Add Wheel</button>
+      <button id="clearAll" class="btn danger">🗑 Clear All Wheels</button>
+      <button id="themeToggle" class="btn ghost" title="Toggle dark/light">🌗</button>
+    </div>
+  </header>
+
+  <main id="app" class="grid"></main>
+
+  <!-- winner modal -->
+  <dialog id="winnerDialog">
+    <h3 id="winnerTitle">Winner</h3>
+    <div class="winner-name" id="winnerName">—</div>
+    <div class="dialog-actions">
+      <button id="removeWinner" class="btn danger">Remove Winner</button>
+      <button id="closeDialog" class="btn">Close</button>
+    </div>
+  </dialog>
+
+  <!-- celebration sound (free, short, arcade-like) -->
+  <audio id="winSound" preload="auto">
+    <source src="https://www.soundjay.com/buttons/sounds/button-10.mp3" type="audio/mpeg">
+  </audio>
+
   <script src="script.js" defer></script>
 </body>
 </html>
