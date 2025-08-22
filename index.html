@@ -3,192 +3,204 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spinzy - Random Spinner</title>
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png" />
-
-  <!-- Social Share (Open Graph & Twitter Cards) -->
-  <meta property="og:title" content="Spinzy - Random Spinner" />
-  <meta property="og:description" content="Spin the wheel to pick a random winner or decision. Free online spinner tool!" />
-  <meta property="og:image" content="preview.png" />
-  <meta property="og:url" content="https://spinzy.netlify.app" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Spinzy - Random Spinner" />
-  <meta name="twitter:description" content="Spin the wheel to pick a random winner or decision." />
-  <meta name="twitter:image" content="preview.png" />
-
+  <title>Spinzy v2</title>
   <style>
     body {
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f6fa;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      margin: 0;
-      background: #f4f4f9;
-      transition: background 0.3s, color 0.3s;
     }
-    h1 { margin-bottom: 10px; }
-    #wheelCanvas {
-      border: 4px solid #333;
-      border-radius: 50%;
-      background: white;
-      max-width: 90vw;
-      height: auto;
-    }
-    #controls {
-      margin-top: 20px;
-      text-align: center;
-      width: 90%;
-      max-width: 400px;
-    }
-    textarea {
+    .container {
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
       width: 100%;
-      height: 100px;
-      margin-bottom: 10px;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      resize: vertical;
+      padding: 1rem;
     }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
+    #wheelCanvas {
+      width: 400px;
+      height: 400px;
       cursor: pointer;
+      transition: transform 0.2s;
+    }
+    #wheelCanvas:hover {
+      transform: scale(1.05);
+    }
+    .list-container {
+      flex: 1;
+      min-width: 200px;
+      max-width: 300px;
+    }
+    .list-container input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .list-container button {
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      width: 100%;
+      background: #3498db;
       border: none;
-      border-radius: 6px;
-      background: #00a8ff;
       color: white;
-      margin: 5px;
+      cursor: pointer;
+      border-radius: 5px;
     }
-    button:hover { background: #007bbf; }
-    #winner {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      color: green;
+    ul {
+      list-style: none;
+      padding: 0;
     }
-    .dark-mode { background: #121212; color: #eaeaea; }
-    .dark-mode #wheelCanvas { background: #333; border-color: #eaeaea; }
-    .dark-toggle {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: #333;
-      color: white;
-      border-radius: 50px;
-      padding: 8px 12px;
-      font-size: 14px;
+    li {
+      padding: 0.3rem;
+      background: #ecf0f1;
+      margin-bottom: 0.2rem;
+      border-radius: 4px;
+    }
+    @media(max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
     }
   </style>
-  <!-- Placeholder for AdSense -->
 </head>
 <body>
-  <button class="dark-toggle" onclick="toggleDarkMode()">🌙 Dark Mode</button>
   <h1>🎡 Spinzy</h1>
-  <canvas id="wheelCanvas" width="400" height="400"></canvas>
-
-  <div id="controls">
-    <textarea id="nameInput" placeholder="Enter names, one per line..."></textarea><br />
-    <button onclick="spin()">Spin!</button>
-    <div id="winner"></div>
+  <div class="container">
+    <canvas id="wheelCanvas" width="400" height="400"></canvas>
+    <div class="list-container">
+      <input type="text" id="nameInput" placeholder="Enter a name" />
+      <button onclick="addName()">Add Name</button>
+      <ul id="nameList"></ul>
+    </div>
   </div>
-
+  <audio id="winSound" src="win-sound.mp3" preload="auto"></audio>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script>
     const canvas = document.getElementById('wheelCanvas');
     const ctx = canvas.getContext('2d');
-    let options = ['Option 1', 'Option 2', 'Option 3'];
-    let startAngle = 0;
-    let arc = Math.PI / (options.length / 2);
-    let spinTimeout = null;
+    let names = ['Alice', 'Bob', 'Charlie', 'Diana'];
+    let rotation = 0;
+    let spinning = false;
+    let idleAngle = 0;
 
-    function drawRouletteWheel() {
-      const outsideRadius = 180;
-      const textRadius = 140;
-      const insideRadius = 50;
+    function drawWheel() {
+      const numSlices = names.length;
+      const anglePerSlice = (2 * Math.PI) / numSlices;
 
-      ctx.clearRect(0, 0, 400, 400);
-      ctx.strokeStyle = 'black';
-      ctx.lineWidth = 2;
-      ctx.font = '16px Arial';
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(canvas.width/2, canvas.height/2);
+      ctx.rotate(rotation + idleAngle);
 
-      for (let i = 0; i < options.length; i++) {
-        const angle = startAngle + i * arc;
-        ctx.fillStyle = i % 2 === 0 ? '#fbc531' : '#00a8ff';
-
+      for (let i=0; i<numSlices; i++) {
         ctx.beginPath();
-        ctx.arc(200, 200, outsideRadius, angle, angle + arc, false);
-        ctx.arc(200, 200, insideRadius, angle + arc, angle, true);
-        ctx.stroke();
+        ctx.moveTo(0,0);
+        ctx.fillStyle = i % 2 === 0 ? '#3498db' : '#e74c3c';
+        ctx.arc(0,0,200,i*anglePerSlice,(i+1)*anglePerSlice);
         ctx.fill();
-
         ctx.save();
-        ctx.fillStyle = 'black';
-        ctx.translate(
-          200 + Math.cos(angle + arc / 2) * textRadius,
-          200 + Math.sin(angle + arc / 2) * textRadius
-        );
-        ctx.rotate(angle + arc / 2 + Math.PI / 2);
-        const text = options[i];
-        ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
+        ctx.fillStyle = 'white';
+        ctx.rotate(i*anglePerSlice + anglePerSlice/2);
+        ctx.textAlign = 'right';
+        ctx.font = '16px Arial';
+        ctx.fillText(names[i], 190, 5);
         ctx.restore();
       }
 
-      ctx.fillStyle = 'red';
+      ctx.restore();
+      // Arrow
+      ctx.fillStyle = '#2c3e50';
       ctx.beginPath();
-      ctx.moveTo(200 - 10, 200 - (outsideRadius + 20));
-      ctx.lineTo(200 + 10, 200 - (outsideRadius + 20));
-      ctx.lineTo(200, 200 - (outsideRadius - 5));
+      ctx.moveTo(canvas.width/2, 0);
+      ctx.lineTo(canvas.width/2 - 15, 30);
+      ctx.lineTo(canvas.width/2 + 15, 30);
       ctx.closePath();
       ctx.fill();
     }
 
-    function rotateWheel() {
-      startAngle += spinAngleIncrement * Math.PI / 180;
-      drawRouletteWheel();
-      if (spinTime < spinTimeTotal) {
-        spinTime += 30;
-        spinAngleIncrement -= (spinAngleIncrement * spinTime) / spinTimeTotal;
-        spinTimeout = setTimeout(rotateWheel, 30);
-      } else {
-        stopRotateWheel();
+    function spinWheel() {
+      if(spinning || names.length === 0) return;
+      spinning = true;
+      let spinTime = 4000; // 4 seconds
+      let spinAngle = Math.random() * Math.PI * 6 + Math.PI * 6; // 3-6 full rotations
+      let start = null;
+
+      function animate(timestamp) {
+        if(!start) start = timestamp;
+        let progress = timestamp - start;
+        rotation = easeOut(progress, 0, spinAngle, spinTime);
+        drawWheel();
+
+        if(progress < spinTime) {
+          requestAnimationFrame(animate);
+        } else {
+          spinning = false;
+          declareWinner();
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    function easeOut(t, b, c, d) {
+      t /= d;
+      t--;
+      return c * (t*t*t + 1) + b;
+    }
+
+    function declareWinner() {
+      const numSlices = names.length;
+      const anglePerSlice = (2 * Math.PI) / numSlices;
+      let winningAngle = (2 * Math.PI - (rotation % (2*Math.PI))) % (2*Math.PI);
+      let index = Math.floor(winningAngle / anglePerSlice);
+      let winner = names[index];
+      alert("🎉 Winner: " + winner + "!");
+      document.getElementById("winSound").play();
+      confetti();
+    }
+
+    function addName() {
+      const input = document.getElementById('nameInput');
+      if(input.value.trim() !== "") {
+        names.push(input.value.trim());
+        input.value = "";
+        updateList();
+        drawWheel();
       }
     }
 
-    let spinAngleIncrement;
-    let spinTime;
-    let spinTimeTotal;
+    function updateList() {
+      const ul = document.getElementById('nameList');
+      ul.innerHTML = "";
+      names.forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        ul.appendChild(li);
+      });
+    }
 
-    function spin() {
-      const input = document.getElementById('nameInput').value.trim();
-      if (input) {
-        options = input.split(/\n+/);
-        arc = Math.PI / (options.length / 2);
+    canvas.addEventListener('click', spinWheel);
+
+    // Idle spin
+    function idleSpin() {
+      if(!spinning) {
+        idleAngle += 0.002;
+        drawWheel();
       }
-      spinAngleIncrement = Math.random() * 10 + 10;
-      spinTime = 0;
-      spinTimeTotal = Math.random() * 3000 + 4000;
-      rotateWheel();
+      requestAnimationFrame(idleSpin);
     }
 
-    function stopRotateWheel() {
-      clearTimeout(spinTimeout);
-      const degrees = (startAngle * 180) / Math.PI + 90;
-      const arcd = (arc * 180) / Math.PI;
-      const index = Math.floor((360 - (degrees % 360)) / arcd);
-      const winner = options[index];
-      document.getElementById('winner').textContent = '🎉 Winner: ' + winner + ' 🎉';
-    }
-
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-      const btn = document.querySelector('.dark-toggle');
-      btn.textContent = document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
-    }
-
-    drawRouletteWheel();
+    updateList();
+    drawWheel();
+    idleSpin();
   </script>
 </body>
 </html>
