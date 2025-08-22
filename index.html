@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spinzzy</title>
-  <link rel="stylesheet" href="style.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spinzzy v11 Fixed</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="toolbar">
-    <button id="addWheelBtn">➕ Add Wheel</button>
-    <button id="clearAllBtn">🗑️ Clear All Wheels</button>
-    <button id="themeToggle">🌙 Toggle Dark</button>
-  </header>
-  <main class="layout">
-    <aside class="ads">
-      <div class="ad-placeholder">Ad space</div>
-    </aside>
-    <section class="content">
-      <div id="wheelContainer"></div>
-    </section>
-  </main>
-  <script src="script.min.js"></script>
+  <div id="app">
+    <div id="toolbar">
+      <button id="toggleTheme">Toggle Dark/Light</button>
+      <button id="addWheel">Add Wheel</button>
+      <button id="clearWheels">Clear All Wheels</button>
+    </div>
+    <div id="layout">
+      <div id="adSpace">Ad Space</div>
+      <div id="wheelArea"></div>
+    </div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
