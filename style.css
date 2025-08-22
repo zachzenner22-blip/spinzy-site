@@ -1,42 +1,26 @@
 body {
+  font-family: Arial, sans-serif;
   margin: 0;
-  font-family: sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  transition: background 0.3s, color 0.3s;
-}
-:root {
-  --bg: #f9f9f9;
-  --text: #222;
-  --card: rgba(255,255,255,0.7);
+  background: #f9f9f9;
+  color: #333;
 }
 body.dark {
-  --bg: #121212;
-  --text: #f9f9f9;
-  --card: rgba(40,40,40,0.7);
+  background: #1e1e1e;
+  color: #f9f9f9;
 }
-.toolbar.glassy {
-  position: sticky;
+#toolbar {
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  backdrop-filter: blur(10px);
-  background: var(--card);
+  justify-content: space-around;
+  background: rgba(50,50,50,0.8);
+  padding: 10px;
+  z-index: 1000;
 }
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-#wheelContainer {
-  display: grid;
-  gap: 1rem;
-  padding: 1rem;
-}
-.wheel-card {
-  background: var(--card);
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+#wheelCanvas {
+  display: block;
+  margin: 100px auto 20px auto;
+  max-width: 90vw;
 }

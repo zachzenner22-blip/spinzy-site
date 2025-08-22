@@ -1,30 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("wheelContainer");
-  const addBtn = document.getElementById("addWheel");
-  const clearBtn = document.getElementById("clearAll");
-  const themeToggle = document.getElementById("themeToggle");
+  const app = document.getElementById("app");
+  const darkModeToggle = document.getElementById("darkModeToggle");
+  const addWheelBtn = document.getElementById("addWheel");
+  const clearWheelsBtn = document.getElementById("clearWheels");
 
-  function addWheel(title = "New Wheel") {
-    const card = document.createElement("div");
-    card.className = "wheel-card";
-    card.innerHTML = \`
-      <h2 contenteditable="true">\${title}</h2>
-      <canvas width="400" height="400"></canvas>
-      <button class="spinBtn">Push to Spin</button>
-      <button class="deleteBtn">Delete Wheel</button>
-    \`;
-    container.appendChild(card);
+  let wheels = [];
+
+  function createWheel(title = "Wheel") {
+    const container = document.createElement("div");
+    container.className = "wheel-container";
+
+    const heading = document.createElement("h2");
+    heading.contentEditable = true;
+    heading.textContent = title;
+    container.appendChild(heading);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 500;
+    canvas.height = 500;
+    canvas.id = "wheelCanvas";
+    container.appendChild(canvas);
+
+    const spinBtn = document.createElement("button");
+    spinBtn.textContent = "Push to Spin";
+    container.appendChild(spinBtn);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete Wheel";
+    deleteBtn.onclick = () => container.remove();
+    container.appendChild(deleteBtn);
+
+    app.appendChild(container);
+    wheels.push({canvas, spinBtn});
   }
 
-  addBtn.addEventListener("click", () => addWheel());
-  clearBtn.addEventListener("click", () => {
-    container.innerHTML = "";
+  addWheelBtn.addEventListener("click", () => createWheel("New Wheel"));
+  clearWheelsBtn.addEventListener("click", () => {
+    app.innerHTML = "";
+    wheels = [];
   });
+  darkModeToggle.addEventListener("click", () => document.body.classList.toggle("dark"));
 
-  themeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-  });
-
-  // Default wheel
-  addWheel("Default Wheel");
+  // Create a default wheel on load
+  createWheel("Default Wheel");
 });

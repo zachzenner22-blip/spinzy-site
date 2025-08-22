@@ -3,22 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spinzy</title>
+  <title>Spinzy 🎡</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="favicon.png">
 </head>
 <body>
-  <header class="toolbar glassy">
-    <div class="logo">🎡 Spinzy</div>
-    <div class="toolbar-buttons">
-      <button id="addWheel">➕ Add Wheel</button>
-      <button id="clearAll">🗑️ Clear All Wheels</button>
-      <button id="themeToggle">🌗 Toggle Theme</button>
-    </div>
-  </header>
-
-  <main id="wheelContainer"></main>
-
-  <script src="script.js"></script>
+  <div id="toolbar">
+    <button id="darkModeToggle">Toggle Dark Mode</button>
+    <button id="addWheel">Add Wheel</button>
+    <button id="clearWheels">Clear All Wheels</button>
+  </div>
+  <div id="app"></div>
+  <script src="script.js" defer></script>
 </body>
 </html>
