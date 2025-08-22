@@ -1,1 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Spinzy – The Fun Random Wheel Spinner</title><meta name="description" content="Spinzy is a free random wheel spinner for names, prizes, and more. Add your own wheels, customize lists, and let fate decide!" /><meta name="theme-color" content="#111827"/><!-- OpenGraph --><meta property="og:title" content="Spinzy – The Fun Random Wheel Spinner" /><meta property="og:description" content="Spinzy is a free random wheel spinner for names, prizes, and more. Add your own wheels, customize lists, and let fate decide!" /><meta property="og:type" content="website" /><meta property="og:image" content="favicon.png" /><!-- Twitter --><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="Spinzy – The Fun Random Wheel Spinner" /><meta name="twitter:description" content="Spinzy is a free random wheel spinner for names, prizes, and more. Add your own wheels, customize lists, and let fate decide!" /><link rel="icon" href="favicon.png" /><link rel="preload" href="assets/logo.svg" as="image" type="image/svg+xml"><link rel="stylesheet" href="style.min.css" /></head><body><div id="confetti-layer"></div><header class="toolbar"><div class="brand"><img src="assets/logo.svg" alt="Spinzy logo" height="28"/></div><div class="tools"><button id="themeToggle" class="btn" title="Toggle Dark Mode">🌓 <span>Dark</span></button><button id="addWheel" class="btn" title="Add Wheel">➕ <span>Add Wheel</span></button><button id="clearAll" class="btn danger" title="Clear All Wheels">🧹 <span>Clear All Wheels</span></button></div></header><main class="container"><nav id="wheelTabs" class="tabs"></nav><section id="wheelArea"></section></main><footer class="footer">Spinzy v5 • © 2025</footer><!-- Winner Modal --><dialog id="winnerModal" class="modal"><h3 id="winnerTitle">Winner</h3><div class="modal-actions"><button id="removeWinnerBtn" class="btn danger">Remove Winner</button><button id="closeModal" class="btn">Close</button></div></dialog><!-- Google Analytics (uncomment + replace with your GA ID, e.g. G-XXXXXXXXXX) --><!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script><script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-XXXXXXXXXX'); function trackSpin(){ gtag('event','wheel_spin'); } </script> --><audio id="winSound" src="win-sound.mp3" preload="auto"></audio><script src="app.min.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spinzy - Random Wheel Spinner</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header>
+    <h1>Spinzy</h1>
+    <button id="darkToggle">🌙 Toggle Dark Mode</button>
+    <button id="addWheel">➕ Add Wheel</button>
+    <button id="clearWheels">🗑️ Clear All Wheels</button>
+  </header>
+
+  <main id="wheel-container">
+    <!-- Default wheel will be injected here -->
+  </main>
+
+  <footer>
+    <p>Spinzy v5 - Random Name Spinner</p>
+  </footer>
+
+  <script src="./script.js" defer></script>
+</body>
+</html>
